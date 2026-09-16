@@ -1,0 +1,90 @@
+// idl/event/event.proto
+// 通用 /api 前缀的 HTTP 契约：getway 接收 HTTP 请求后转发给 activity 服务的
+// Event gRPC 接口（activity/api/event/v1/event.proto）。
+// 这里只收编 admin.proto 未对接的 RPC：GetEvent / ListEvent / DeleteEvent。
+// 消息字段与上游 proto 一比一对齐，便于 handler 直接透传。
+syntax = "proto3";
+
+package getway;
+
+option go_package = "getway/event";
+
+import "api.proto";
+
+// ===================== GetEvent 对齐 eventv1.GetEventRequest/Reply =====================
+
+message GetEventReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message GetEventResp {
+  string title       = 1;
+  string description = 2;
+  string location    = 3;
+  string cover_image = 4;
+  string start_time  = 5;
+  string end_time    = 6;
+  int32  sold_count  = 7;
+}
+
+// ===================== ListEvent 对齐 eventv1.ListEventRequest/Reply =====================
+
+message ListEventReq {
+  int64 page = 1 [(api.query) = "page"];
+  int64 size = 2 [(api.query) = "size"];
+}
+
+message EventData {
+  int64  id          = 1;
+  string title       = 2;
+  string description = 3;
+  string location    = 4;
+  string cover_image = 5;
+  string start_time  = 6;
+  string end_time    = 7;
+  string status      = 8;
+  int32  sold_count  = 9;
+}
+
+message ListEventResp {
+  repeated EventData list  = 1;
+  int64              total = 2;
+}
+
+// ===================== DeleteEvent 对齐 eventv1.DeleteEventRequest/Reply =====================
+
+message DeleteEventReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message DeleteEventResp {}
+
+// ===================== GetEventStock 对齐 eventv1.GetEventStockRequest/Reply =====================
+
+message GetEventStockReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message TicketTypeStock {
+  int64 ticket_type_id = 1;
+  int32 stock          = 2;
+}
+
+message GetEventStockResp {
+  repeated TicketTypeStock stocks = 1;
+}
+
+service EventServices {
+  rpc GetEvent(GetEventReq) returns (GetEventResp) {
+    option (api.get) = "/api/events/:id";
+  }
+  rpc ListEvent(ListEventReq) returns (ListEventResp) {
+    option (api.get) = "/api/events";
+  }
+  rpc DeleteEvent(DeleteEventReq) returns (DeleteEventResp) {
+    option (api.delete) = "/api/events/:id";
+  }
+  rpc GetEventStock(GetEventStockReq) returns (GetEventStockResp) {
+    option (api.get) = "/api/events/:id/stock";
+  }
+}

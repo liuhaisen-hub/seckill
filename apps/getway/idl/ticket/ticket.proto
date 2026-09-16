@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package getway;
+
+option go_package = "getway/ticket";
+
+import "api.proto";
+
+message PurchaseReq {
+  int64 event_id       = 1;
+  int64 show_id        = 2;
+  int64 ticket_type_id = 3;
+  int32 quantity       = 4;
+}
+
+message PurchaseResp {
+  string status         = 1;
+  string message        = 2;
+  string purchase_token = 3;
+}
+
+service TicketServices {
+  rpc Purchase(PurchaseReq) returns (PurchaseResp) {
+    option (api.post) = "/api/purchase";
+  }
+}

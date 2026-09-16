@@ -1,0 +1,56 @@
+// idl/ticket_type/ticket_type.proto
+// 通用 /api 前缀的 HTTP 契约：getway 接收 HTTP 请求后转发给 activity 服务的
+// TicketType gRPC 接口（activity/api/ticket_type/v1/ticket_type.proto）。
+// 这里只收编 admin.proto 未对接的 RPC：GetTicketType / ListTicketType。
+// 消息字段与上游 proto 一比一对齐，便于 handler 直接透传。
+syntax = "proto3";
+
+package getway;
+
+option go_package = "getway/ticket_type";
+
+import "api.proto";
+
+// ===================== GetTicketType 对齐 tickettypev1.GetTicketTypeRequest/Reply =====================
+
+message GetTicketTypeReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+message GetTicketTypeResp {
+  int64  id           = 1;
+  string name         = 2;
+  float  price        = 3;
+  int32  stock        = 4;
+  int32  max_per_user = 5;
+  int32  sort_order   = 6;
+  int64  event_id     = 7;
+}
+
+// ===================== ListTicketType 对齐 tickettypev1.ListTicketTypeRequest/Reply =====================
+
+message ListTicketTypeReq {
+  int64 page = 1 [(api.query) = "page"];
+  int64 size = 2 [(api.query) = "size"];
+}
+message TicketTypeData {
+  int64  id           = 1;
+  string name         = 2;
+  float  price        = 3;
+  int32  stock        = 4;
+  int32  max_per_user = 5;
+  int32  sort_order   = 6;
+  int64  event_id     = 7;
+}
+message ListTicketTypeResp {
+  repeated TicketTypeData list  = 1;
+  int64                   total = 2;
+}
+
+service TicketTypeServices {
+  rpc GetTicketType(GetTicketTypeReq) returns (GetTicketTypeResp) {
+    option (api.get) = "/api/ticket-types/:id";
+  }
+  rpc ListTicketType(ListTicketTypeReq) returns (ListTicketTypeResp) {
+    option (api.get) = "/api/ticket-types";
+  }
+}

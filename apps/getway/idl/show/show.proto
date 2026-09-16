@@ -1,0 +1,87 @@
+// idl/show/show.proto
+// 通用 /api 前缀的 HTTP 契约：getway 接收 HTTP 请求后转发给 activity 服务的
+// Show gRPC 接口（activity/api/show/v1/show.proto）。
+// 这里只收编 admin.proto 未对接的 RPC：GetShow / ListShow
+// （UpdateStatus 已由 admin.proto 的 publish/unpublish 覆盖）。
+// 消息字段与上游 proto 一比一对齐，便于 handler 直接透传。
+syntax = "proto3";
+
+package getway;
+
+option go_package = "getway/show";
+
+import "api.proto";
+
+// ===================== GetShow 对齐 showv1.GetShowRequest/Reply =====================
+
+message GetShowReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message GetShowResp {
+  int64  id         = 1;
+  int64  event_id   = 2;
+  string name       = 3;
+  string show_time  = 4;
+  string end_time   = 5;
+  string status     = 6;
+  int32  stock      = 7;
+  int32  sold_count = 8;
+  int32  sort_order = 9;
+}
+
+// ===================== ListShow 对齐 showv1.ListShowRequest/Reply =====================
+
+message ListShowReq {
+  int64 page = 1 [(api.query) = "page"];
+  int64 size = 2 [(api.query) = "size"];
+  // 过滤维度：按活动 / 状态(draft/on_sale/closed 等) 下钻，与上游一致
+  int64           event_id = 3 [(api.query) = "event_id"];
+  optional string status   = 4 [(api.query) = "status"];
+}
+
+message ShowData {
+  int64  id         = 1;
+  int64  event_id   = 2;
+  string name       = 3;
+  string show_time  = 4;
+  string end_time   = 5;
+  string status     = 6;
+  int32  stock      = 7;
+  int32  sold_count = 8;
+  int32  sort_order = 9;
+}
+
+message ListShowResp {
+  repeated ShowData list  = 1;
+  int64             total = 2;
+}
+
+message GetEventShowReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message GetEventShowResp {
+  int64  id         = 1;
+  int64  event_id   = 2;
+  string name       = 3;
+  string show_time  = 4;
+  string end_time   = 5;
+  string status     = 6;
+  int32  stock      = 7;
+  int32  sold_count = 8;
+  int32  sort_order = 9;
+
+}
+
+service ShowServices {
+  rpc GetShow(GetShowReq) returns (GetShowResp) {
+    option (api.get) = "/api/shows/:id";
+  }
+  rpc ListShow(ListShowReq) returns (ListShowResp) {
+    option (api.get) = "/api/shows";
+  }
+  rpc GetEventShow(GetEventShowReq) returns (GetEventShowResp) {
+    option (api.get) ="/api/events/:id/shows";
+  }
+}

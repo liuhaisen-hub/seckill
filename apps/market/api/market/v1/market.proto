@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package api.market.v1;
+
+option go_package = "market/api/market/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.market.v1";
+
+// Marketplace 二手市场服务：挂牌 CRUD + 转让历史查询。
+// 卖家/买家身份由网关从 JWT 解析后通过 user_id 字段传入，
+// RPC 服务端信任内网调用方，不再做鉴权。
+service Marketplace {
+  rpc CreateListing (CreateListingRequest) returns (CreateListingReply);
+  rpc GetListing (GetListingRequest) returns (GetListingReply);
+  rpc ListActiveListings (ListActiveListingsRequest) returns (ListActiveListingsReply);
+  rpc ListEventListings (ListEventListingsRequest) returns (ListEventListingsReply);
+  rpc ListMyListings (ListMyListingsRequest) returns (ListMyListingsReply);
+  rpc ListMyPurchases (ListMyPurchasesRequest) returns (ListMyPurchasesReply);
+  rpc ListTransferHistory (ListTransferHistoryRequest) returns (ListTransferHistoryReply);
+  rpc BuyListing (BuyListingRequest) returns (BuyListingReply);
+  rpc CancelListing (CancelListingRequest) returns (CancelListingReply);
+}
+
+message CreateListingRequest {
+  int64  seller_id   = 1; // 当前登录用户
+  int64  ticket_id   = 2;
+  double price       = 3;
+  string description = 4;
+}
+
+message CreateListingReply {
+  int64  id          = 1;
+  int64  ticket_id   = 2;
+  int64  seller_id   = 3;
+  double price       = 4;
+  string status      = 5;
+  string description = 6;
+  string created_at  = 7;
+}
+
+// ListingData 挂牌 + 关联票种/活动的展示信息，详情与列表共用。
+message ListingData {
+  int64  id          = 1;
+  int64  ticket_id   = 2;
+  int64  event_id    = 3;
+  string event_title = 4;
+  string ticket_name = 5;
+  int64  seller_id   = 6;
+  double price       = 7;
+  string status      = 8;
+  int64  buyer_id    = 9;
+  string description = 10;
+  string created_at  = 11;
+}
+
+message GetListingRequest {
+  int64 id = 1;
+}
+
+message GetListingReply {
+  ListingData listing = 1;
+}
+
+message ListActiveListingsRequest {
+  int64 page = 1;
+  int64 size = 2;
+}
+
+message ListActiveListingsReply {
+  repeated ListingData list  = 1;
+  int64                total = 2;
+}
+
+message ListEventListingsRequest {
+  int64 event_id = 1;
+  int64 page     = 2;
+  int64 size     = 3;
+}
+
+message ListEventListingsReply {
+  repeated ListingData list  = 1;
+  int64                total = 2;
+}
+
+message ListMyListingsRequest {
+  int64 seller_id = 1; // 当前登录用户
+  int64 page      = 2;
+  int64 size      = 3;
+}
+
+message ListMyListingsReply {
+  repeated ListingData list  = 1;
+  int64                total = 2;
+}
+
+message ListMyPurchasesRequest {
+  int64 buyer_id = 1; // 当前登录用户
+  int64 page     = 2;
+  int64 size     = 3;
+}
+
+message ListMyPurchasesReply {
+  repeated ListingData list  = 1;
+  int64                total = 2;
+}
+
+message TransferHistoryData {
+  int64  id            = 1;
+  int64  ticket_id     = 2;
+  int64  from_user_id  = 3;
+  int64  to_user_id    = 4;
+  string status        = 5;
+  string transfer_type = 6;
+  double price         = 7;
+  string reason        = 8;
+  string created_at    = 9;
+}
+
+message ListTransferHistoryRequest {
+  int64 user_id = 1; // 当前登录用户，查自己买入或卖出的记录
+  int64 page    = 2;
+  int64 size    = 3;
+}
+
+message ListTransferHistoryReply {
+  repeated TransferHistoryData list  = 1;
+  int64                        total = 2;
+}
+
+message BuyListingRequest {
+  int64 id       = 1; // 挂牌 ID
+  int64 buyer_id = 2; // 当前登录用户
+}
+
+message BuyListingReply {
+  string message = 1;
+}
+
+message CancelListingRequest {
+  int64 id        = 1; // 挂牌 ID
+  int64 seller_id = 2; // 当前登录用户
+}
+
+message CancelListingReply {
+  string message = 1;
+}

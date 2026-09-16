@@ -1,0 +1,140 @@
+// idl/market/market.proto
+// 通用 /api 前缀的 HTTP 契约：getway 接收 HTTP 请求后转发给 market 服务的
+// Marketplace gRPC 接口（market/api/market/v1/market.proto）。
+// 消息字段与上游 proto 一比一对齐，便于 handler 直接透传。
+// 卖家/买家身份统一从 JWT 取（mvw.GetUserID），不出现在请求体里。
+syntax = "proto3";
+
+package getway;
+
+option go_package = "getway/market";
+
+import "api.proto";
+
+message CreateListingReq {
+  int64  ticket_id   = 1;
+  double price       = 2;
+  string description = 3;
+}
+
+message CreateListingResp {
+  int64  id          = 1;
+  int64  ticket_id   = 2;
+  int64  seller_id   = 3;
+  double price       = 4;
+  string status      = 5;
+  string description = 6;
+  string created_at  = 7;
+}
+
+message ListingData {
+  int64  id          = 1;
+  int64  ticket_id   = 2;
+  int64  event_id    = 3;
+  string event_title = 4;
+  string ticket_name = 5;
+  int64  seller_id   = 6;
+  double price       = 7;
+  string status      = 8;
+  int64  buyer_id    = 9;
+  string description = 10;
+  string created_at  = 11;
+}
+
+message GetListingReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message GetListingResp {
+  ListingData listing = 1;
+}
+
+// MarketListResp 在售列表/我的挂牌/我的购买/按活动查询共用。
+message MarketListResp {
+  repeated ListingData list  = 1;
+  int64                total = 2;
+}
+
+message ListActiveReq {
+  int64 page  = 1 [(api.query) = "page"];
+  int64 limit = 2 [(api.query) = "limit"];
+}
+
+message ListMyReq {
+  int64 page  = 1 [(api.query) = "page"];
+  int64 limit = 2 [(api.query) = "limit"];
+}
+
+message ListEventReq {
+  int64 event_id = 1 [(api.path) = "event_id"];
+  int64 page     = 2 [(api.query) = "page"];
+  int64 limit    = 3 [(api.query) = "limit"];
+}
+
+message GetOpReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message OpResp {
+  string message = 1;
+}
+
+message TransferHistoryData {
+  int64  id            = 1;
+  int64  ticket_id     = 2;
+  int64  from_user_id  = 3;
+  int64  to_user_id    = 4;
+  string status        = 5;
+  string transfer_type = 6;
+  double price         = 7;
+  string reason        = 8;
+  string created_at    = 9;
+}
+
+message ListTransferHistoryReq {
+  int64 page  = 1 [(api.query) = "page"];
+  int64 limit = 2 [(api.query) = "limit"];
+}
+
+message ListTransferHistoryResp {
+  repeated TransferHistoryData list  = 1;
+  int64                        total = 2;
+}
+
+service MarketServices {
+  rpc CreateListing(CreateListingReq) returns (CreateListingResp) {
+    option (api.post) = "/api/marketplace";
+  }
+
+  rpc BuyListing(GetOpReq) returns (OpResp) {
+    option (api.post) = "/api/marketplace/:id/buy";
+  }
+
+  rpc CancelListing(GetOpReq) returns (OpResp) {
+    option (api.post) = "/api/marketplace/:id/cancel";
+  }
+
+  rpc GetListing(GetListingReq) returns (GetListingResp) {
+    option (api.get) = "/api/marketplace/:id";
+  }
+
+  rpc ListActiveListings(ListActiveReq) returns (MarketListResp) {
+    option (api.get) = "/api/marketplace";
+  }
+
+  rpc ListMyListings(ListMyReq) returns (MarketListResp) {
+    option (api.get) = "/api/marketplace/my";
+  }
+
+  rpc ListMyPurchases(ListMyReq) returns (MarketListResp) {
+    option (api.get) = "/api/marketplace/purchases";
+  }
+
+  rpc ListEventListings(ListEventReq) returns (MarketListResp) {
+    option (api.get) = "/api/marketplace/event/:event_id";
+  }
+
+  rpc ListTransferHistory(ListTransferHistoryReq) returns (ListTransferHistoryResp) {
+    option (api.get) = "/api/transfer/history";
+  }
+}

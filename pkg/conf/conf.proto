@@ -1,0 +1,53 @@
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "sale/pkg/conf;conf";
+
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  Server server = 1;
+  Data   data   = 2;
+}
+
+message Server {
+  message GRPC {
+    string                   network = 1;
+    string                   addr    = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  GRPC grpc = 1;
+}
+
+message Data {
+  message Database {
+    // Driver name registered with database/sql, e.g. "mysql".
+    string driver    = 1;
+    string host      = 2;
+    int32  port      = 3;
+    string user_name = 4;
+    string password  = 5;
+    string database  = 6;
+
+  }
+  message Redis {
+    string                   host          = 1;
+    int64                    port          = 2;
+    int64                    db            = 3;
+    string                   password      = 4;
+    google.protobuf.Duration read_timeout  = 5;
+    google.protobuf.Duration write_timeout = 6;
+  }
+  message RedisCluster {
+    repeated string          adds           = 1;
+    google.protobuf.Duration read_timeout   = 2;
+    google.protobuf.Duration write_timeout  = 3;
+    int64                    pool_size      = 4;
+    int64                    min_idle_conns = 5;
+    string                   password       = 6;
+  }
+  Database     database      = 1;
+  Redis        redis         = 2;
+  RedisCluster redis_cluster = 3;
+  repeated string brokers = 4;
+}

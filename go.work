@@ -1,0 +1,11 @@
+go 1.26.5
+
+use (
+	.
+	./apps/market
+	./apps/activity
+	./apps/seckill
+	./apps/getway
+	./apps/ws-getway
+	./apps/user
+)

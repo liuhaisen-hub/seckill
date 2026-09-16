@@ -1,0 +1,116 @@
+// idl/promo/promo.proto
+// 通用 /api 前缀的 HTTP 契约：getway 接收 HTTP 请求后转发给 activity 服务的
+// Promo gRPC 接口（activity/api/promo/v1/promo.proto）。
+// 这里只收编 admin.proto 未对接的 RPC：GetPromo / ListPromo / UpdatePromo。
+// 消息字段与上游 proto 一比一对齐，便于 handler 直接透传。
+syntax = "proto3";
+
+package getway;
+
+option go_package = "getway/promo";
+
+import "api.proto";
+
+// ===================== GetPromo 对齐 promov1.GetPromoRequest/Reply =====================
+
+message GetPromoReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message GetPromoResp {
+  int64         id             = 1;
+  string        code           = 2;
+  int64         event_id       = 3;
+  string        discount_type  = 4;
+  float         discount_value = 5;
+  float         min_amount     = 6;
+  int32         max_uses       = 7;
+  int32         used_count     = 8;
+  string        start_time     = 9;
+  string        end_time       = 10;
+  optional bool is_active      = 11;
+}
+
+// ===================== ListPromo 对齐 promov1.ListPromoRequest/Reply =====================
+
+message ListPromoReq {
+  int64 page = 1 [(api.query) = "page"];
+  int64 size = 2 [(api.query) = "size"];
+}
+
+message PromoData {
+  int64         id             = 1;
+  string        code           = 2;
+  int64         event_id       = 3;
+  string        discount_type  = 4;
+  float         discount_value = 5;
+  float         min_amount     = 6;
+  int32         max_uses       = 7;
+  int32         used_count     = 8;
+  string        start_time     = 9;
+  string        end_time       = 10;
+  optional bool is_active      = 11;
+}
+
+message ListPromoResp {
+  repeated PromoData list  = 1;
+  int64              total = 2;
+}
+
+// ===================== UpdatePromo 对齐 promov1.UpdatePromoRequest/Reply =====================
+
+message UpdatePromoReq {
+  int64         id             = 1 [(api.path) = "id"];
+  string        code           = 2;
+  int64         event_id       = 3;
+  string        discount_type  = 4;
+  float         discount_value = 5;
+  float         min_amount     = 6;
+  int32         max_uses       = 7;
+  int32         used_count     = 8;
+  string        start_time     = 9;
+  string        end_time       = 10;
+  optional bool is_active      = 11;
+}
+
+message UpdatePromoResp {
+  int64         id             = 1;
+  string        code           = 2;
+  int64         event_id       = 3;
+  string        discount_type  = 4;
+  float         discount_value = 5;
+  float         min_amount     = 6;
+  int32         max_uses       = 7;
+  int32         used_count     = 8;
+  string        start_time     = 9;
+  string        end_time       = 10;
+  optional bool is_active      = 11;
+}
+
+message ValidateReq {
+  string code   = 1;
+  float  amount = 2;
+}
+
+message ValidateResp {
+  string code           = 1;
+  string discount_type  = 2;
+  float  discount_value = 3;
+  float  discount       = 4;
+  float  final_amount   = 5;
+}
+
+service PromoServices {
+  rpc GetPromo(GetPromoReq) returns (GetPromoResp) {
+    option (api.get) = "/api/promos/:id";
+  }
+  rpc ListPromo(ListPromoReq) returns (ListPromoResp) {
+    option (api.get) = "/api/promos";
+  }
+  rpc UpdatePromo(UpdatePromoReq) returns (UpdatePromoResp) {
+    option (api.put) = "/api/promos/:id";
+  }
+  rpc ValidatePromo(ValidateReq) returns (ValidateResp) {
+    option (api.post) = "/api/promo";
+  }
+}

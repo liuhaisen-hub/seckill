@@ -1,0 +1,351 @@
+// idl/admin/admin.proto
+// admin 后台 HTTP 契约：getway 接收 HTTP 请求后转发给 admin 服务的 gRPC 接口。
+// 路由与入参一比一对齐 Full-stack-distributed-flash-sale-engine
+// internal/router/router.go 中的 /admin 路由组。
+syntax = "proto3";
+
+package getway;
+
+option go_package = "getway/admin";
+
+import "api.proto";
+
+// ===================== 通用 =====================
+
+message Empty {}
+
+message MessageResp {
+  string message = 1;
+}
+
+// ===================== User 用户管理 =====================
+
+message UpdateUserRoleReq {
+  int64  user_id = 1;
+  string role    = 2;
+}
+
+// ===================== Event 活动 =====================
+
+message CreateEventReq {
+  string title       = 1;
+  string description = 2;
+  string location    = 3;
+  string cover_image = 4;
+  string start_time  = 5;
+  string end_time    = 6;
+}
+message CreateEventResp {
+  int64  id         = 1;
+  string title      = 2;
+  string location   = 3;
+  string start_time = 4;
+  string end_time   = 5;
+  string status     = 6;
+}
+
+message UpdateEventReq {
+  int64  id          = 1 [(api.path) = "id"];
+  string title       = 2;
+  string description = 3;
+  string location    = 4;
+  string cover_image = 5;
+  string start_time  = 6;
+  string end_time    = 7;
+}
+message UpdateEventResp {
+  int64  id         = 1;
+  string title      = 2;
+  string location   = 3;
+  string start_time = 4;
+  string end_time   = 5;
+  string status     = 6;
+}
+
+message PublishEventReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message UnPublishEventReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message EndEventReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+// ===================== TicketType 票种 =====================
+
+message CreateTicketTypeReq {
+  int64  id           = 1 [(api.path) = "id"];
+  string name         = 2;
+  double price        = 3;
+  int32  stock        = 4;
+  int32  max_per_user = 5;
+  int32  sort_order   = 6;
+}
+message CreateTicketTypeResp {
+  int64  id           = 1;
+  string name         = 2;
+  double price        = 3;
+  int32  stock        = 4;
+  int32  max_per_user = 5;
+}
+
+message UpdateTicketTypeReq {
+  int64  id           = 1 [(api.path) = "id"];
+  string name         = 2;
+  double price        = 3;
+  int32  stock        = 4;
+  int32  max_per_user = 5;
+  int32  sort_order   = 6;
+}
+message UpdateTicketTypeResp {
+  int64  id           = 1;
+  string name         = 2;
+  double price        = 3;
+  int32  stock        = 4;
+  int32  max_per_user = 5;
+}
+
+message DeleteTicketTypeReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+// ===================== Show 场次 =====================
+
+message CreateShowReq {
+  int64  id         = 1 [(api.path) = "id"];
+  string name       = 2;
+  string show_time  = 3;
+  string end_time   = 4;
+  int32  stock      = 5;
+  int32  sort_order = 6;
+}
+message CreateShowResp {
+  int64  id         = 1;
+  string name       = 2;
+  string show_time  = 3;
+  string end_time   = 4;
+  string status     = 5;
+  int32  stock      = 6;
+  int32  sort_order = 7;
+}
+
+message UpdateShowReq {
+  int64  id         = 1 [(api.path) = "id"];
+  string name       = 2;
+  string show_time  = 3;
+  string end_time   = 4;
+  int32  stock      = 5;
+  int32  sort_order = 6;
+}
+message UpdateShowResp {
+  int64  id         = 1;
+  string name       = 2;
+  string show_time  = 3;
+  string end_time   = 4;
+  string status     = 5;
+  int32  stock      = 6;
+  int32  sort_order = 7;
+}
+
+message DeleteShowReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message PublishShowReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message UnPublishShowReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+// ===================== Promo 促销码 =====================
+
+message CreatePromoCodeReq {
+  string code           = 1;
+  int64  event_id       = 2;
+  string discount_type  = 3;
+  double discount_value = 4;
+  double min_amount     = 5;
+  int32  max_uses       = 6;
+  string start_time     = 7;
+  string end_time       = 8;
+}
+message CreatePromoCodeResp {
+  int64  id             = 1;
+  string code           = 2;
+  string discount_type  = 3;
+  double discount_value = 4;
+}
+
+message DeletePromoCodeReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+// ===================== Stats 统计 =====================
+
+message GetDashboardStatsReq {}
+message GetDashboardStatsResp {
+  int64  total_events     = 1;
+  int64  active_events    = 2;
+  int64  total_tickets    = 3;
+  int64  sold_tickets     = 4;
+  int64  reserved_tickets = 5;
+  double total_revenue    = 6;
+  int64  today_sales      = 7;
+  double today_revenue    = 8;
+}
+
+message GetSalesTrendReq {
+  int64 days = 1 [(api.query) = "days"];
+}
+message SalesTrend {
+  string date    = 1;
+  int64  count   = 2;
+  double revenue = 3;
+}
+message GetSalesTrendResp {
+  repeated SalesTrend data = 1;
+}
+
+message GetTicketTypeStatsReq {}
+message TicketTypeStats {
+  int64  ticket_type_id   = 1;
+  string ticket_type_name = 2;
+  string event_title      = 3;
+  int64  sold_count       = 4;
+  double revenue          = 5;
+}
+message GetTicketTypeStatsResp {
+  repeated TicketTypeStats data = 1;
+}
+
+message GetConversionFunnelReq {
+  int64 event_id = 1 [(api.path) = "event_id"];
+}
+message GetConversionFunnelResp {
+  int64 page_views  = 1;
+  int64 add_to_cart = 2;
+  int64 reserved    = 3;
+  int64 paid        = 4;
+  int64 used        = 5;
+}
+
+// ===================== Transfer 票务转让审核 =====================
+
+message TransferInfo {
+  int64  id            = 1;
+  int64  ticket_id     = 2;
+  int64  from_user_id  = 3;
+  int64  to_user_id    = 4;
+  string status        = 5;
+  string transfer_type = 6;
+  double price         = 7;
+  string reason        = 8;
+  int64  reviewed_by   = 9;
+  string reviewed_at   = 10;
+}
+
+message GetPendingTransfersReq {}
+message GetPendingTransfersResp {
+  repeated TransferInfo data = 1;
+}
+
+message ApproveTransferReq {
+  int64 id = 1 [(api.path) = "id"];
+}
+
+message RejectTransferReq {
+  int64  id     = 1 [(api.path) = "id"];
+  string reason = 2;
+}
+
+// ===================== Service =====================
+
+service AdminServices {
+  // 用户管理
+  rpc UpdateUserRole(UpdateUserRoleReq) returns (MessageResp) {
+    option (api.post) = "/admin/users/role";
+  }
+
+  // 活动管理
+  rpc CreateEvent(CreateEventReq) returns (CreateEventResp) {
+    option (api.post) = "/admin/events";
+  }
+  rpc UpdateEvent(UpdateEventReq) returns (UpdateEventResp) {
+    option (api.put) = "/admin/events/:id";
+  }
+  rpc PublishEvent(PublishEventReq) returns (MessageResp) {
+    option (api.post) = "/admin/events/:id/publish";
+  }
+  rpc UnPublishEvent(UnPublishEventReq) returns (MessageResp) {
+    option (api.post) = "/admin/events/:id/unpublish";
+  }
+  rpc EndEvent(EndEventReq) returns (MessageResp) {
+    option (api.post) = "/admin/events/:id/end";
+  }
+
+  // 票种管理
+  rpc CreateTicketType(CreateTicketTypeReq) returns (CreateTicketTypeResp) {
+    option (api.post) = "/admin/events/:id/ticket-types";
+  }
+  rpc UpdateTicketType(UpdateTicketTypeReq) returns (UpdateTicketTypeResp) {
+    option (api.put) = "/admin/events/ticket-types/:id";
+  }
+  rpc DeleteTicketType(DeleteTicketTypeReq) returns (Empty) {
+    option (api.delete) = "/admin/events/ticket-types/:id";
+  }
+
+  // 场次管理
+  rpc CreateShow(CreateShowReq) returns (CreateShowResp) {
+    option (api.post) = "/admin/events/:id/shows";
+  }
+  rpc UpdateShow(UpdateShowReq) returns (UpdateShowResp) {
+    option (api.put) = "/admin/events/shows/:id";
+  }
+  rpc DeleteShow(DeleteShowReq) returns (Empty) {
+    option (api.delete) = "/admin/events/shows/:id";
+  }
+  rpc PublishShow(PublishShowReq) returns (MessageResp) {
+    option (api.post) = "/admin/events/shows/:id/publish";
+  }
+  rpc UnPublishShow(UnPublishShowReq) returns (MessageResp) {
+    option (api.post) = "/admin/events/shows/:id/unpublish";
+  }
+
+  // 促销码管理
+  rpc CreatePromoCode(CreatePromoCodeReq) returns (CreatePromoCodeResp) {
+    option (api.post) = "/admin/promo";
+  }
+  rpc DeletePromoCode(DeletePromoCodeReq) returns (MessageResp) {
+    option (api.delete) = "/admin/promo/:id";
+  }
+
+  // 统计数据
+  rpc GetDashboardStats(GetDashboardStatsReq) returns (GetDashboardStatsResp) {
+    option (api.get) = "/admin/stats/dashboard";
+  }
+  rpc GetSalesTrend(GetSalesTrendReq) returns (GetSalesTrendResp) {
+    option (api.get) = "/admin/stats/sales-trend";
+  }
+  rpc GetTicketTypeStats(GetTicketTypeStatsReq) returns (GetTicketTypeStatsResp) {
+    option (api.get) = "/admin/stats/ticket-types";
+  }
+  rpc GetConversionFunnel(GetConversionFunnelReq) returns (GetConversionFunnelResp) {
+    option (api.get) = "/admin/stats/funnel/:event_id";
+  }
+
+  // 票务转让审核
+  rpc GetPendingTransfers(GetPendingTransfersReq) returns (GetPendingTransfersResp) {
+    option (api.get) = "/admin/transfer/pending";
+  }
+  rpc ApproveTransfer(ApproveTransferReq) returns (MessageResp) {
+    option (api.post) = "/admin/transfer/:id/approve";
+  }
+  rpc RejectTransfer(RejectTransferReq) returns (MessageResp) {
+    option (api.post) = "/admin/transfer/:id/reject";
+  }
+}

@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package api.seckill.v1;
+
+option go_package = "seckill/api/seckill/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.seckill.v1";
+
+service Seckill {
+  rpc CreateSeckill (CreateSeckillRequest) returns (CreateSeckillReply);
+  // 预热活动
+  rpc InitSeckill(InitSeckillRequest) returns (InitSeckillReply);
+  // 轮询兜底：WS 推送丢失/超时时，客户端凭关联 ID 主动查询结果
+  rpc GetSeckillResult (GetSeckillResultRequest) returns (GetSeckillResultReply);
+}
+
+message CreateSeckillRequest {
+  int64 event_id       = 1;
+  int64 show_id        = 2;
+  int64 ticket_type_id = 3;
+  int64 quantity       = 4;
+}
+
+message CreateSeckillReply {
+  string status         = 1;
+  string message        = 2;
+  string purchase_token = 3;
+}
+
+message InitSeckillRequest {
+  string activity_id = 1;
+  string product_id  = 2;
+  int64  stock       = 3;
+}
+
+message InitSeckillReply {
+
+}
+
+message GetSeckillResultRequest {
+  int64 user_id        = 1;        // 同样来自 JWT
+  int64 event_id       = 2;
+  int64 ticket_type_id = 3;
+  int64 timestamp      = 4;      // CreateSeckillReply 返回的关联 ID
+}
+
+message GetSeckillResultReply {
+  string status    = 1;   // processing / success / failed
+  string message   = 2;
+  string order_no  = 3;
+  int64  timestamp = 4; // 原样回显，方便客户端匹配
+}

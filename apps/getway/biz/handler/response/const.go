@@ -1,0 +1,15 @@
+package response
+
+var (
+	SUCCESS_CODE        = 0
+	ERRORPARAMS_CODE    = 1001
+	ERRORBUSSINESS_CODE = 1002
+	ERRORTOKENFAIL_CODE = 1003
+)
+
+var (
+	SUCCESS_MSG        = "成功"
+	ERRORPARAMS_MSG    = "参数错误"
+	ERRORBUSSINESS_MSG = "系统错误"
+	ERRORTOKENFAIL_MSG = "身份校验失败"
+)

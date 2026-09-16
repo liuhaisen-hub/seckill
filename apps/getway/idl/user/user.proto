@@ -1,0 +1,61 @@
+// idl/hello/hello.proto
+syntax = "proto3";
+
+package getway;
+
+option go_package = "getway/user";
+
+import "api.proto";
+
+message RegisterReq {
+  string username = 1;
+  string password = 2;
+  string email    = 3;
+}
+
+message RegisterResp {
+
+}
+
+message LoginReq {
+  string userName = 1;
+  string password = 2;
+}
+
+message LoginResp {
+  string access_token = 1;
+  string token_type   = 2;
+  string expires_in   = 3;
+}
+
+message GetProfileReq {
+
+}
+
+message GetProfileResp {
+  int64  id       = 1;
+  string username = 2;
+  string email    = 3;
+  string role     = 4;
+}
+
+message UpdateUserReq {
+  int64  user_id = 1;
+  string role    = 2;
+}
+
+message UpdateUserResp {
+
+}
+
+service UserServices {
+  rpc Register(RegisterReq) returns (RegisterResp) {
+    option (api.post) = "api/auth/register";
+  }
+  rpc Login(LoginReq) returns (LoginResp) {
+    option (api.post) = "api/auth/login";
+  }
+  rpc GetProfile(GetProfileReq) returns (GetProfileResp) {
+    option (api.get) = "/api/profile";
+  }
+}

@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package api.stats.v1;
+
+option go_package = "admin/api/stats/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.stats.v1";
+
+// Stats 只读统计服务，聚合结构与 model/stats.go 一一对应：
+// DashboardStats / SalesTrend / TicketTypeStats / ConversionFunnel。
+service Stats {
+	rpc GetDashboard (GetDashboardRequest) returns (GetDashboardReply);
+	rpc ListSalesTrend (ListSalesTrendRequest) returns (ListSalesTrendReply);
+	rpc ListTicketTypeStats (ListTicketTypeStatsRequest) returns (ListTicketTypeStatsReply);
+	rpc GetConversionFunnel (GetConversionFunnelRequest) returns (GetConversionFunnelReply);
+}
+
+message GetDashboardRequest {
+	// event_id 为 0 表示全部活动
+	int64 event_id = 1;
+	string start_date = 2;
+	string end_date = 3;
+}
+message DashboardStats {
+	int64 total_events = 1;
+	int64 active_events = 2;
+	int64 total_tickets = 3;
+	int64 sold_tickets = 4;
+	int64 reserved_tickets = 5;
+	float total_revenue = 6;
+	int64 today_sales = 7;
+	float today_revenue = 8;
+}
+message GetDashboardReply {
+	DashboardStats stats = 1;
+}
+
+message ListSalesTrendRequest {
+	int64 event_id = 1;
+	string start_date = 2;
+	string end_date = 3;
+}
+message SalesTrend {
+	string date = 1;
+	int64 count = 2;
+	float revenue = 3;
+}
+message ListSalesTrendReply {
+	repeated SalesTrend list = 1;
+}
+
+message ListTicketTypeStatsRequest {
+	int64 event_id = 1;
+	string start_date = 2;
+	string end_date = 3;
+}
+message TicketTypeStats {
+	int64 ticket_type_id = 1;
+	string ticket_type_name = 2;
+	string event_title = 3;
+	int64 sold_count = 4;
+	float revenue = 5;
+}
+message ListTicketTypeStatsReply {
+	repeated TicketTypeStats list = 1;
+}
+
+message GetConversionFunnelRequest {
+	int64 event_id = 1;
+	string start_date = 2;
+	string end_date = 3;
+}
+message ConversionFunnel {
+	int64 page_views = 1;
+	int64 add_to_cart = 2;
+	int64 reserved = 3;
+	int64 paid = 4;
+	int64 used = 5;
+}
+message GetConversionFunnelReply {
+	ConversionFunnel funnel = 1;
+}

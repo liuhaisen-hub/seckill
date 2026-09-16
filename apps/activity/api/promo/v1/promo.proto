@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package api.promo.v1;
+
+option go_package = "admin/api/promo/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.promo.v1";
+
+service Promo {
+  rpc CreatePromo (CreatePromoRequest) returns (CreatePromoReply);
+  rpc UpdatePromo (UpdatePromoRequest) returns (UpdatePromoReply);
+  rpc DeletePromo (DeletePromoRequest) returns (DeletePromoReply);
+  rpc GetPromo (GetPromoRequest) returns (GetPromoReply);
+  rpc ListPromo (ListPromoRequest) returns (ListPromoReply);
+  rpc VaildatePromo( ValidRequest) returns (ValiReply);
+}
+
+//  id SERIAL PRIMARY KEY,
+//     created_at TIMESTAMP WITH TIME ZONE,
+//     updated_at TIMESTAMP WITH TIME ZONE,
+//     deleted_at TIMESTAMP WITH TIME ZONE,
+//     code VARCHAR(255) UNIQUE NOT NULL,
+//     event_id INTEGER,
+//     discount_type VARCHAR(50) NOT NULL,
+//     discount_value DECIMAL(10,2) NOT NULL,
+//     min_amount DECIMAL(10,2) DEFAULT 0,
+//     max_uses INTEGER DEFAULT 0,
+//     used_count INTEGER DEFAULT 0,
+//     start_time TIMESTAMP WITH TIME ZONE,
+//     end_time TIMESTAMP WITH TIME ZONE,
+//     is_active BOOLEAN DEFAULT true
+message CreatePromoRequest {
+  string code           = 1;
+  int64  event_id       = 2;
+  string discount_type  = 3;
+  float  discount_value = 4;
+  float  min_amount     = 5;
+  int32  max_uses       = 6;
+  int32  used_count     = 7;
+  string start_time     = 8;
+  string end_time       = 9;
+  bool   is_active      = 10;
+
+}
+
+message CreatePromoReply {
+  string code           = 1;
+  int64  event_id       = 2;
+  string discount_type  = 3;
+  float  discount_value = 4;
+  float  min_amount     = 5;
+  int32  max_uses       = 6;
+  int32  used_count     = 7;
+  string start_time     = 8;
+  string end_time       = 9;
+  bool   is_active      = 10;
+}
+
+message UpdatePromoRequest {
+  int64         id             = 1;
+  string        code           = 2;
+  int64         event_id       = 3;
+  string        discount_type  = 4;
+  float         discount_value = 5;
+  float         min_amount     = 6;
+  int32         max_uses       = 7;
+  int32         used_count     = 8;
+  string        start_time     = 9;
+  string        end_time       = 10;
+  optional bool is_active      = 11;
+}
+
+message UpdatePromoReply {
+  int64         id             = 1;
+  string        code           = 2;
+  int64         event_id       = 3;
+  string        discount_type  = 4;
+  float         discount_value = 5;
+  float         min_amount     = 6;
+  int32         max_uses       = 7;
+  int32         used_count     = 8;
+  string        start_time     = 9;
+  string        end_time       = 10;
+  optional bool is_active      = 11;
+}
+
+message DeletePromoRequest {
+  int64 id = 1;
+}
+
+message DeletePromoReply {}
+
+message GetPromoRequest {
+  int64 id = 1;
+}
+
+message GetPromoReply {
+  int64         id             = 1;
+  string        code           = 2;
+  int64         event_id       = 3;
+  string        discount_type  = 4;
+  float         discount_value = 5;
+  float         min_amount     = 6;
+  int32         max_uses       = 7;
+  int32         used_count     = 8;
+  string        start_time     = 9;
+  string        end_time       = 10;
+  optional bool is_active      = 11;
+}
+
+message PromoData {
+  int64         id             = 1;
+  string        code           = 2;
+  int64         event_id       = 3;
+  string        discount_type  = 4;
+  float         discount_value = 5;
+  float         min_amount     = 6;
+  int32         max_uses       = 7;
+  int32         used_count     = 8;
+  string        start_time     = 9;
+  string        end_time       = 10;
+  optional bool is_active      = 11;
+}
+
+message ListPromoRequest {
+  int64 page = 1;
+  int64 size = 2;
+}
+
+message ListPromoReply {
+  repeated PromoData list  = 1;
+  int64              total = 2;
+}
+
+message ValidRequest {
+  string code   = 1;
+  float  amount = 2;
+}
+
+message ValiReply {
+  string code           = 1;
+  string discount_type  = 2;
+  float  discount_value = 3;
+  float  discount       = 4;
+  float  final_amount   = 5;
+}

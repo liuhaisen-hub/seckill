@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package api.ticket_type.v1;
+
+option go_package = "admin/api/ticket_type/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.ticket_type.v1";
+
+service TicketType {
+	rpc CreateTicketType (CreateTicketTypeRequest) returns (CreateTicketTypeReply);
+	rpc UpdateTicketType (UpdateTicketTypeRequest) returns (UpdateTicketTypeReply);
+	rpc DeleteTicketType (DeleteTicketTypeRequest) returns (DeleteTicketTypeReply);
+	rpc GetTicketType (GetTicketTypeRequest) returns (GetTicketTypeReply);
+	rpc ListTicketType (ListTicketTypeRequest) returns (ListTicketTypeReply);
+}
+
+message CreateTicketTypeRequest {
+	int64 event_id = 1;
+	string name =  2;
+	float price = 3;
+	int32 stock = 4;
+	int32 max_per_user = 5;
+	int32 sort_order = 6;
+}
+message CreateTicketTypeReply {
+	int64 id = 1;
+	string name =  2;
+	float price = 3;
+	int32 stock = 4;
+	int32 max_per_user = 5;
+	int32 sort_order = 6;
+	int64 event_id = 7;
+}
+
+message UpdateTicketTypeRequest {
+	int64 id = 1;
+	string name =  2;
+	float price = 3;
+	int32 stock = 4;
+	int32 max_per_user = 5;
+	int32 sort_order = 6;
+	int64 event_id = 7;
+}
+message UpdateTicketTypeReply {
+	int64 id = 1;
+	string name =  2;
+	float price = 3;
+	int32 stock = 4;
+	int32 max_per_user = 5;
+	int32 sort_order = 6;
+	int64 event_id = 7;
+}
+
+message DeleteTicketTypeRequest {
+	int64 id = 1;
+}
+message DeleteTicketTypeReply {}
+
+message GetTicketTypeRequest {
+	int64 id =  1;
+}
+message GetTicketTypeReply {
+	int64 id = 1;
+	string name =  2;
+	float price = 3;
+	int32 stock = 4;
+	int32 max_per_user = 5;
+	int32 sort_order = 6;
+	int64 event_id = 7;
+}
+message TicketTypeData {
+    int64 id = 1;
+	string name =  2;
+	float price = 3;
+	int32 stock = 4;
+	int32 max_per_user = 5;
+	int32 sort_order = 6;
+	int64 event_id = 7;
+}
+message ListTicketTypeRequest {
+	int64 page = 1;
+	int64 size =  2;
+}
+message ListTicketTypeReply {
+	repeated TicketTypeData list = 1;
+	int64 total = 2;
+}

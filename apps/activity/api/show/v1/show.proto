@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package api.show.v1;
+
+option go_package = "admin/api/show/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.show.v1";
+
+service Show {
+  rpc CreateShow (CreateShowRequest) returns (CreateShowReply);
+  rpc UpdateShow (UpdateShowRequest) returns (UpdateShowReply);
+  rpc DeleteShow (DeleteShowRequest) returns (DeleteShowReply);
+  rpc GetShow (GetShowRequest) returns (GetShowReply);
+  rpc ListShow (ListShowRequest) returns (ListShowReply);
+  rpc UpdateStatus(UpdateStatusRequest) returns (UpdateStatusReply);
+  rpc GetEventShow(GetEventShowRequest) returns (GetEventShowReply);
+}
+// CREATE TABLE IF NOT EXISTS shows (
+//     id SERIAL PRIMARY KEY,
+//     created_at TIMESTAMP WITH TIME ZONE,
+//     updated_at TIMESTAMP WITH TIME ZONE,
+//     deleted_at TIMESTAMP WITH TIME ZONE,
+//     event_id INTEGER NOT NULL,
+//     name VARCHAR(255) NOT NULL,
+//     show_time TIMESTAMP WITH TIME ZONE NOT NULL,
+//     end_time TIMESTAMP WITH TIME ZONE NOT NULL,
+//     status VARCHAR(50) DEFAULT 'draft' NOT NULL,
+//     stock INTEGER NOT NULL DEFAULT 0,
+//     sold_count INTEGER DEFAULT 0,
+//     sort_order INTEGER DEFAULT 0
+// );
+
+message CreateShowRequest {
+  int64  event_id   = 1;
+  string name       = 2;
+  string show_time  = 3;
+  string end_time   = 4;
+  int32  stock      = 5;
+  int32  sold_count = 6;
+  int32  sort_order = 7;
+}
+
+message CreateShowReply {
+  int64  id         = 1;
+  int64  event_id   = 2;
+  string name       = 3;
+  string show_time  = 4;
+  string end_time   = 5;
+  string status     = 6;
+  int32  stock      = 7;
+  int32  sold_count = 8;
+  int32  sort_order = 9;
+}
+
+message UpdateShowRequest {
+  int64           id         = 1;
+  int64           event_id   = 2;
+  string          name       = 3;
+  string          show_time  = 4;
+  string          end_time   = 5;
+  optional string status     = 6;
+  int32           stock      = 7;
+  int32           sold_count = 8;
+  int32           sort_order = 9;
+}
+
+message UpdateShowReply {
+  int64           id         = 1;
+  int64           event_id   = 2;
+  string          name       = 3;
+  string          show_time  = 4;
+  string          end_time   = 5;
+  optional string status     = 6;
+  int32           stock      = 7;
+  int32           sold_count = 8;
+  int32           sort_order = 9;
+}
+
+message DeleteShowRequest {
+  int64 id = 1;
+}
+
+message DeleteShowReply {}
+
+message GetShowRequest {
+  int64 id = 1;
+}
+
+message GetShowReply {
+  int64  id         = 1;
+  int64  event_id   = 2;
+  string name       = 3;
+  string show_time  = 4;
+  string end_time   = 5;
+  string status     = 6;
+  int32  stock      = 7;
+  int32  sold_count = 8;
+  int32  sort_order = 9;
+}
+
+message ShowData {
+  int64  id         = 1;
+  int64  event_id   = 2;
+  string name       = 3;
+  string show_time  = 4;
+  string end_time   = 5;
+  string status     = 6;
+  int32  stock      = 7;
+  int32  sold_count = 8;
+  int32  sort_order = 9;
+}
+
+message ListShowRequest {
+  int64 page = 1;
+  int64 size = 2;
+	// 过滤维度：按活动 / 状态(draft/on_sale/closed 等) 下钻
+  int64           event_id = 3;
+  optional string status   = 4;
+}
+
+message ListShowReply {
+  repeated ShowData list  = 1;
+  int64             total = 2;
+}
+
+message UpdateStatusRequest {
+  int64  id     = 1;
+  string status = 2;
+}
+
+message UpdateStatusReply {
+
+}
+
+message GetEventShowRequest {
+  int64 id = 1;
+}
+
+message GetEventShowReply {
+  int64  id         = 1;
+  int64  event_id   = 2;
+  string name       = 3;
+  string show_time  = 4;
+  string end_time   = 5;
+  string status     = 6;
+  int32  stock      = 7;
+  int32  sold_count = 8;
+  int32  sort_order = 9;
+}
